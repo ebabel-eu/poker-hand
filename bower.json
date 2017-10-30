@@ -3,10 +3,12 @@
   "description": "Guess what is in the hand of another poker player.",
   "main": "index.html",
   "dependencies": {
-    "polymer": "Polymer/polymer#^2.0.0"
+    "polymer": "Polymer/polymer#2.0.0",
+    "voice-elements": "ebabel-eu/voice-elements#2.0.0",
+    "random-number": "ebabel-eu/random-number#1.0.0"
   },
   "devDependencies": {
-    "web-component-tester": "Polymer/web-component-tester#^6.0.0",
+    "web-component-tester": "Polymer/web-component-tester#6.0.0",
     "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
   }
 }
