@@ -1,4 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/game-card/game-card.html">
+<link rel="import" href="../../bower_components/random-list/random-list.html">
 
 <dom-module id="poker-hand-app">
   <template>
@@ -7,7 +9,13 @@
         display: block;
       }
     </style>
-    <h2>Hello [[prop1]]!</h2>
+
+    <game-card symbol="♥" rank="a" flippable unrevealed></game-card>
+    <game-card symbol="♣" rank="2" flippable></game-card>
+    <game-card symbol="♦" rank="3" flippable></game-card>
+    <game-card symbol="♠" rank="Q" flippable></game-card>
+
+    <random-list source='[{"symbol": "♥"}, "ho", "hi", "hu"]' max="4"></random-list>
   </template>
 
   <script>
