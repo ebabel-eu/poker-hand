@@ -1,0 +1,36 @@
+<link rel="import" href="../polymer/polymer-element.html">
+
+<dom-module id="poker-hand">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+    </style>
+    <h2>Hello [[prop1]]!</h2>
+  </template>
+
+  <script>
+    /**
+     * `poker-hand`
+     * Guess what is in the hand of another poker player.
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class PokerHand extends Polymer.Element {
+      static get is() { return 'poker-hand'; }
+      static get properties() {
+        return {
+          prop1: {
+            type: String,
+            value: 'poker-hand'
+          }
+        };
+      }
+    }
+
+    window.customElements.define(PokerHand.is, PokerHand);
+  </script>
+</dom-module>
