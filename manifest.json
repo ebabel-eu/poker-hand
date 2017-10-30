@@ -1,0 +1,7 @@
+{
+  "name": "poker-hand",
+  "short_name": "poker-hand",
+  "description": "Guess what is in the hand of another poker player.",
+  "start_url": "/",
+  "display": "standalone"
+}
