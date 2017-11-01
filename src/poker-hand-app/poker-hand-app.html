@@ -30,6 +30,13 @@
     <template is="dom-repeat" items="[[revealedHand]]">
       <game-card symbol="[[item.symbol]]" rank="[[item.rank]]"></game-card>
     </template>
+
+    <h2>Devinez les cartes de la Main Mystère</h2>
+    <template is="dom-repeat" items="[[allCards]]">
+      <game-card symbol="[[item.symbol]]" rank="[[item.rank]]" flippable
+        description="[[item.description]]"
+        on-click="revealCard"></game-card>
+    </template>
   </template>
 
   <script>
@@ -45,6 +52,9 @@
             type: Array,
           },
           revealedHand: {
+            type: Array,
+          },
+          allCards: {
             type: Array,
           },
         };
@@ -81,21 +91,22 @@
         const hearts = getSuite(symbols[2], symbolNames[2]);
         const spades = getSuite(symbols[3], symbolNames[3]);
 
-        const cards = diamonds.concat(clubs).concat(hearts).concat(spades);
+        const allCards = diamonds.concat(clubs).concat(hearts).concat(spades);
 
         const secretHand = this.$.randomCards.pickRandomList({
-          source: cards,
+          source: allCards,
           max: 5,
         });
-
-        this.secretHand = secretHand.list.map(card => JSON.parse(card));
 
         const revealedHand = this.$.randomCards.pickRandomList({
           source: secretHand.rest,
           max: 5,
         });
 
+        // Update UI.
+        this.secretHand = secretHand.list.map(card => JSON.parse(card));
         this.revealedHand = revealedHand.list.map(card => JSON.parse(card));
+        this.allCards = allCards;
       }
     }
 
