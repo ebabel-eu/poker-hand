@@ -1,4 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html">
+
 <link rel="import" href="../../bower_components/game-card/game-card.html">
 <link rel="import" href="../../bower_components/random-list/random-list.html">
 
@@ -10,12 +12,11 @@
       }
     </style>
 
-    <game-card symbol="♥" rank="a" flippable unrevealed></game-card>
-    <game-card symbol="♣" rank="2" flippable></game-card>
-    <game-card symbol="♦" rank="3" flippable></game-card>
-    <game-card symbol="♠" rank="Q" flippable></game-card>
+    <random-list id="randomCards"></random-list>
 
-    <random-list source='[{"symbol": "♥"}, "ho", "hi", "hu"]' max="4"></random-list>
+    <template is="dom-repeat" items="[[secretHand]]">
+      <game-card symbol="[[item.symbol]]" rank="[[item.rank]]"></game-card>
+    </template>
   </template>
 
   <script>
@@ -27,11 +28,44 @@
       static get is() { return 'poker-hand-app'; }
       static get properties() {
         return {
-          prop1: {
-            type: String,
-            value: 'poker-hand-app'
-          }
+          secretHand: {
+            type: Array,
+          },
         };
+      }
+
+      ready() {
+        super.ready();
+
+        const symbols = [ '♦', '♣', '♥', '♠' ];
+        const ranks = [ 'a', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k' ];
+
+        const getSuite = (symbol) => {
+          let rankIndex = 0;
+          return new Array(13).fill({}).map(element => {
+            const card = {
+              symbol,
+              rank: ranks[rankIndex],
+            };
+            rankIndex = rankIndex + 1;
+            return card;
+          });
+        };
+
+        const diamonds = getSuite(symbols[0]);
+        const clubs = getSuite(symbols[1]);
+        const hearts = getSuite(symbols[2]);
+        const spades = getSuite(symbols[3]);
+
+        const cards = diamonds.concat(clubs).concat(hearts).concat(spades);
+
+        const result = this.$.randomCards.pickRandomList({
+          display: true,
+          source: cards,
+          max: 5,
+        });
+
+        this.secretHand = result.list.map(card => JSON.parse(card));
       }
     }
 
