@@ -11,6 +11,23 @@
       :host {
         display: block;
       }
+
+      game-card {
+        border: solid 5px transparent;
+        border-radius: 16px;
+      }
+
+      game-card.flippable {
+        cursor: pointer;
+      }
+
+      game-card.flippable:hover {
+        border-color: yellow;
+      }
+
+      game-card.flippable:active {
+        border-color: transparent;
+      }
     </style>
 
     <voice-player id="voicePlayer" accent="fr-FR"></voice-player>
@@ -20,10 +37,8 @@
 
     <h2>Main Mystère</h2>
     <template is="dom-repeat" items="[[secretHand]]">
-      <game-card
-        symbol="[[item.symbol]]" rank="[[item.rank]]" unrevealed flippable
-        description="[[item.description]]"
-        on-click="revealCard"></game-card>
+      <game-card symbol="[[item.symbol]]" rank="[[item.rank]]" unrevealed
+        description="[[item.description]]"></game-card>
     </template>
 
     <h2>Votre Main</h2>
@@ -35,7 +50,7 @@
     <template is="dom-repeat" items="[[allCards]]">
       <game-card symbol="[[item.symbol]]" rank="[[item.rank]]" flippable
         description="[[item.description]]"
-        on-click="revealCard"></game-card>
+        on-click="revealCard" class="flippable"></game-card>
     </template>
   </template>
 
@@ -71,7 +86,7 @@
         const symbols = [ '♦', '♣', '♥', '♠' ];
         const symbolNames = [ 'Carreau', 'Trèfle', 'Coeur', 'Pique' ];
         const ranks = [ 'a', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k' ];
-        const rankNames = [ 'As', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Valet', 'Dame', 'Roi' ];
+        const rankNames = [ 'As', 'Deux', 'Trois', 'Quatre', 'Cinq', 'Six', 'Sept', 'Huit', 'Neuf', 'Dix', 'Valet', 'Dame', 'Roi' ];
 
         const getSuite = (symbol, symbolName) => {
           let rankIndex = 0;
@@ -86,12 +101,21 @@
           });
         };
 
+        const shuffleCards = (cards) => {
+          for (let i = cards.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [cards[i], cards[j]] = [cards[j], cards[i]];
+          }
+
+          return cards;
+        }
+
         const diamonds = getSuite(symbols[0], symbolNames[0]);
         const clubs = getSuite(symbols[1], symbolNames[1]);
         const hearts = getSuite(symbols[2], symbolNames[2]);
         const spades = getSuite(symbols[3], symbolNames[3]);
 
-        const allCards = diamonds.concat(clubs).concat(hearts).concat(spades);
+        const allCards = shuffleCards(diamonds.concat(clubs).concat(hearts).concat(spades));
 
         const secretHand = this.$.randomCards.pickRandomList({
           source: allCards,
