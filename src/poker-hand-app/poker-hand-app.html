@@ -1,6 +1,7 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html">
 
+<link rel="import" href="../../bower_components/voice-elements/dist/voice-player.html">
 <link rel="import" href="../../bower_components/game-card/game-card.html">
 <link rel="import" href="../../bower_components/random-list/random-list.html">
 
@@ -12,9 +13,21 @@
       }
     </style>
 
+    <voice-player id="voicePlayer" accent="fr-FR"></voice-player>
     <random-list id="randomCards"></random-list>
 
+    <h1>Main au Poker</h1>
+
+    <h2>Main Mystère</h2>
     <template is="dom-repeat" items="[[secretHand]]">
+      <game-card
+        symbol="[[item.symbol]]" rank="[[item.rank]]" unrevealed flippable
+        description="[[item.description]]"
+        on-click="revealCard"></game-card>
+    </template>
+
+    <h2>Votre Main</h2>
+    <template is="dom-repeat" items="[[revealedHand]]">
       <game-card symbol="[[item.symbol]]" rank="[[item.rank]]"></game-card>
     </template>
   </template>
@@ -31,41 +44,58 @@
           secretHand: {
             type: Array,
           },
+          revealedHand: {
+            type: Array,
+          },
         };
+      }
+
+      revealCard(e) {
+        this.$.voicePlayer.speech.text = e.currentTarget.description;
+        this.$.voicePlayer.speak();
       }
 
       ready() {
         super.ready();
 
         const symbols = [ '♦', '♣', '♥', '♠' ];
+        const symbolNames = [ 'Carreau', 'Trèfle', 'Coeur', 'Pique' ];
         const ranks = [ 'a', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'j', 'q', 'k' ];
+        const rankNames = [ 'As', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Valet', 'Dame', 'Roi' ];
 
-        const getSuite = (symbol) => {
+        const getSuite = (symbol, symbolName) => {
           let rankIndex = 0;
           return new Array(13).fill({}).map(element => {
             const card = {
               symbol,
               rank: ranks[rankIndex],
+              description: `${rankNames[rankIndex]} de ${symbolName}`,
             };
             rankIndex = rankIndex + 1;
             return card;
           });
         };
 
-        const diamonds = getSuite(symbols[0]);
-        const clubs = getSuite(symbols[1]);
-        const hearts = getSuite(symbols[2]);
-        const spades = getSuite(symbols[3]);
+        const diamonds = getSuite(symbols[0], symbolNames[0]);
+        const clubs = getSuite(symbols[1], symbolNames[1]);
+        const hearts = getSuite(symbols[2], symbolNames[2]);
+        const spades = getSuite(symbols[3], symbolNames[3]);
 
         const cards = diamonds.concat(clubs).concat(hearts).concat(spades);
 
-        const result = this.$.randomCards.pickRandomList({
-          display: true,
+        const secretHand = this.$.randomCards.pickRandomList({
           source: cards,
           max: 5,
         });
 
-        this.secretHand = result.list.map(card => JSON.parse(card));
+        this.secretHand = secretHand.list.map(card => JSON.parse(card));
+
+        const revealedHand = this.$.randomCards.pickRandomList({
+          source: secretHand.rest,
+          max: 5,
+        });
+
+        this.revealedHand = revealedHand.list.map(card => JSON.parse(card));
       }
     }
 
