@@ -1,5 +1,8 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
+<link rel="import" href="../../bower_components/paper-styles/typography.html">
+<link rel="import" href="../../bower_components/web-animations-js/web-animations.min.html">
 
 <link rel="import" href="../../bower_components/voice-elements/dist/voice-player.html">
 <link rel="import" href="../../bower_components/game-card/game-card.html">
@@ -10,48 +13,57 @@
     <style>
       :host {
         display: block;
+        background-color:  var(--paper-grey-900);
+        color: var(--paper-grey-100);
+        margin: 0 auto;
+        max-width: 300px;
+
+        @apply --paper-font-common-base;
+      }
+
+      .cards {
+        padding: 6px;
+        height: 272px;
+        text-align: center;
+        position: relative;
+      }
+
+      .ai {
+        background-color: var(--paper-teal-700);
+      }
+
+      .player {
+        background-color: var(--paper-green-700);
       }
 
       game-card {
-        border: solid 5px transparent;
-        border-radius: 16px;
+        font-size: 1.25em;
+        width: 93px;
+        height: 132px;
       }
 
-      game-card.flippable {
+      .player game-card {
         cursor: pointer;
-      }
-
-      game-card.flippable:hover {
-        border-color: yellow;
-      }
-
-      game-card.flippable:active {
-        border-color: transparent;
+        margin-top: 138px;
       }
     </style>
 
     <voice-player id="voicePlayer" accent="fr-FR"></voice-player>
     <random-list id="randomCards"></random-list>
 
-    <h1>Main au Poker</h1>
+    <div class="cards ai">
+      <template is="dom-repeat" items="[[secretHand]]">
+        <game-card symbol="[[item.symbol]]" rank="[[item.rank]]" unrevealed
+          description="[[item.description]]"></game-card>
+      </template>
+    </div>
 
-    <h2>Main Mystère</h2>
-    <template is="dom-repeat" items="[[secretHand]]">
-      <game-card symbol="[[item.symbol]]" rank="[[item.rank]]" unrevealed
-        description="[[item.description]]"></game-card>
-    </template>
-
-    <h2>Votre Main</h2>
-    <template is="dom-repeat" items="[[revealedHand]]">
-      <game-card symbol="[[item.symbol]]" rank="[[item.rank]]"></game-card>
-    </template>
-
-    <h2>Devinez les cartes de la Main Mystère</h2>
-    <template is="dom-repeat" items="[[allCards]]">
-      <game-card symbol="[[item.symbol]]" rank="[[item.rank]]" flippable
-        description="[[item.description]]"
-        on-click="revealCard" class="flippable"></game-card>
-    </template>
+    <div class="cards player">
+      <template is="dom-repeat" items="[[revealedHand]]">
+        <game-card symbol="[[item.symbol]]" rank="[[item.rank]]"
+          description="[[item.description]]" on-click="playCard"></game-card>
+      </template>
+    </div>
   </template>
 
   <script>
@@ -75,7 +87,28 @@
         };
       }
 
-      revealCard(e) {
+      playCard(e) {
+        this.describeCard(e);
+
+        const currentTarget = e.currentTarget;
+
+        const animateUp = currentTarget.animate({
+          transform: ['none', 'translateY(-138px)'],
+        }, {
+          duration: 500,
+          iterations: 1,
+          easing: 'ease-in',
+        });
+
+        animateUp.onfinish = () => {
+          currentTarget.style.left = `${currentTarget.offsetLeft}px`;
+          currentTarget.style.top = '6px';
+          currentTarget.style.position = 'absolute';
+          currentTarget.style.marginTop = '0';
+        };
+      }
+
+      describeCard(e) {
         this.$.voicePlayer.speech.text = e.currentTarget.description;
         this.$.voicePlayer.speak();
       }
@@ -119,12 +152,12 @@
 
         const secretHand = this.$.randomCards.pickRandomList({
           source: allCards,
-          max: 5,
+          max: 3,
         });
 
         const revealedHand = this.$.randomCards.pickRandomList({
           source: secretHand.rest,
-          max: 5,
+          max: 3,
         });
 
         // Update UI.
