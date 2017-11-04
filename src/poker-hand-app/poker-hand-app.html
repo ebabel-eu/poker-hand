@@ -1,7 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer-element.html">
 <link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="../../bower_components/paper-styles/paper-styles.html">
-<link rel="import" href="../../bower_components/paper-styles/typography.html">
 <link rel="import" href="../../bower_components/web-animations-js/web-animations.min.html">
 
 <link rel="import" href="../../bower_components/voice-elements/dist/voice-player.html">
@@ -17,8 +16,6 @@
         color: var(--paper-grey-100);
         margin: 0 auto;
         max-width: 300px;
-
-        @apply --paper-font-common-base;
       }
 
       .cards {
@@ -26,6 +23,23 @@
         height: 272px;
         text-align: center;
         position: relative;
+      }
+
+      .cards li {
+        display: inline-block;
+        background-color: lime;
+        position: absolute;
+        left: 104px;
+      }
+
+      .cards li:first-child {
+        background-color: fuchsia;
+        left: 5px;
+      }
+
+      .cards li:nth-child(3) {
+        background-color: red;
+        left: 203px;
       }
 
       .ai {
@@ -51,19 +65,23 @@
     <voice-player id="voicePlayer" accent="fr-FR"></voice-player>
     <random-list id="randomCards"></random-list>
 
-    <div class="cards ai">
+    <ul class="cards ai">
       <template is="dom-repeat" items="[[secretHand]]">
-        <game-card symbol="[[item.symbol]]" rank="[[item.rank]]" unrevealed
-          description="[[item.description]]"></game-card>
+        <li>
+          <game-card symbol="[[item.symbol]]" rank="[[item.rank]]" unrevealed
+            description="[[item.description]]" on-click="playCard" class="down"></game-card>
+        </li>
       </template>
-    </div>
+    </ul>
 
-    <div class="cards player">
+    <ul class="cards player">
       <template is="dom-repeat" items="[[revealedHand]]">
-        <game-card symbol="[[item.symbol]]" rank="[[item.rank]]"
-          description="[[item.description]]" on-click="playCard"></game-card>
+        <li data-x="[[index]]">
+          <game-card symbol="[[item.symbol]]" rank="[[item.rank]]"
+            description="[[item.description]]" on-click="playCard" class="up"></game-card>
+        </li>
       </template>
-    </div>
+    </ul>
   </template>
 
   <script>
@@ -92,19 +110,22 @@
 
         const currentTarget = e.currentTarget;
 
-        const animateUp = currentTarget.animate({
-          transform: ['none', 'translateY(-138px)'],
+        const isDown = currentTarget.className.indexOf('down') !== -1;
+        const translateY = (isDown) ? '138px' : '-138px';
+        const transform = ['none', `translateY(${translateY})`];
+
+        const moveUpOrDown = currentTarget.animate({
+          transform,
         }, {
           duration: 500,
           iterations: 1,
           easing: 'ease-in',
         });
 
-        animateUp.onfinish = () => {
+        moveUpOrDown.onfinish = () => {
           currentTarget.style.left = `${currentTarget.offsetLeft}px`;
-          currentTarget.style.top = '6px';
           currentTarget.style.position = 'absolute';
-          currentTarget.style.marginTop = '0';
+          currentTarget.style.marginTop = (isDown) ? '138px' : '0';
         };
       }
 
