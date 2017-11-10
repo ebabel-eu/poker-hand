@@ -5,7 +5,7 @@
   "dependencies": {
     "polymer": "Polymer/polymer#~2.0.2",
     "voice-elements": "ebabel-eu/voice-elements#^2.0.0",
-    "random-number": "ebabel-eu/random-number#^1.0.0",
+    "random-number": "ebabel-eu/random-number#^2.0.0",
     "game-card": "ebabel-eu/game-card#^1.1.0",
     "random-list": "ebabel-eu/random-list#^1.0.2",
     "paper-styles": "2.0.0",
